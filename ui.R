@@ -14,6 +14,9 @@ seniunija <- readRDS("dists.RDS")
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
+  tags$link(rel = "stylesheet", type = "text/css", href = "maps.css"),
+  tags$script(src = "addMap.js"),
+  
   # Application title
   titlePanel("Kindergarten Info System (KISS)"),
   
@@ -42,7 +45,7 @@ shinyUI(fluidPage(
     mainPanel(
        #plotOutput("distPlot")
     )
-    
-    div(id="map")
-  )
+  ),
+  div(id='map'),
+  uiOutput("google_maps_API")
 ))

@@ -22,5 +22,15 @@ shinyServer(function(input, output) {
     hist(x, breaks = bins, col = 'darkgray', border = 'white')
     
   })
+  output$google_maps_API <- renderUI({
+    connection_info <- readLines('private/google-api-key.csv')
+    HTML(paste0(
+            '<script async defer src=" https://maps.googleapis.com/maps/api/js?key=',
+            connection_info,'&callback=initMap"></script>'
+                )
+        )
+
+    
+  })
   
 })
