@@ -11,6 +11,7 @@ library(shiny)
 library(rgdal)
 library(data.table)
 library(geosphere)
+library(DT)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- allkg %>% filter(LABEL %in% darzeliai) %>% 
@@ -25,21 +26,25 @@ tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
    
-  # output$distPlot <- renderPlot({
-  #   
-  #   # generate bins based on input$bins from ui.R
-  #   x    <- faithful[, 2] 
-  #   bins <- seq(min(x), max(x), length.out = input$bins + 1)
-  #   
-  #   # draw the histogram with the specified number of bins
-  #   hist(x, breaks = bins, col = 'darkgray', border = 'white')
-  #   
-  # })
+  rv <- reactiveValues()
+  
   observeEvent(input$go, {
-    output$table <- renderTable({
-      data.frame(
+    output$table <- DT::renderDataTable({
+      prio <- input$twoyears + input$school + input$threemore +
+        input$unable + input$lonely + (length(input$otherkids) > 0)
+      if(input$city == "2") {
+        prio <- prio + 1e2
+      } else if (input$city == "3") {
+        prio <- prio + 1e3
+      }
+      age <- (Sys.Date() - input$birthddate) %>% as.integer %>% 
+        `%/%`(365)
+      req(rv$home)
+      req(rv$work)
+      kgs <- data.frame(
         Darzelis = tmp@data, 
-        Atstumas = distVincentyEllipsoid(tmp, c(25.275,54.693))
+        Namai = distVincentyEllipsoid(tmp, rv$home)/1e3,
+        Darbas = distVincentyEllipsoid(tmp, rv$work)/1e3
       )
     })
   })
@@ -52,17 +57,28 @@ shinyServer(function(input, output) {
         )
   })
   
-  output$coords <- renderUI({
-    
-    req(input$marker_id, input$marker_lat, input$marker_lng)
-    tagList(
-      div(input$marker_id),
-      div(input$marker_lat),
-      div(input$marker_lng)
-    )
-    
-    #browser()
+  observeEvent(input$marker_lat, {
+    req(input$marker_lat)
+    req(input$marker_id == "home-map")
+    rv$home <- c(input$marker_lng, input$marker_lat)
   })
+  
+  observeEvent(input$marker_lat, {
+    req(input$marker_lat)
+    req(input$marker_id == "work-map")
+    rv$work <- c(input$marker_lng, input$marker_lat)
+  })
+  
+  # output$coords <- renderUI({
+  #   req(input$marker_id, input$marker_lat, input$marker_lng)
+  #   tagList(
+  #     div(input$marker_id),
+  #     div(input$marker_lat),
+  #     div(input$marker_lng)
+  #   )
+  #   
+  #   #browser()
+  # })
   
   
 })

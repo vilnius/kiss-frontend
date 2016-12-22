@@ -8,6 +8,7 @@
 #
 library(magrittr)
 library(shiny)
+library(DT)
 
 seniunija <- readRDS("dists.RDS") %>% sort 
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
@@ -34,13 +35,13 @@ shinyUI(fluidPage(
         choices = setNames(1:3, c("Abu tėvai", "Vienas iš tėvų",
                                   "Nei vienas iš tėvų"))),
       checkboxInput(
-        "2years", 
+        "twoyears", 
         label = "Bent vienas iš tėvų registruotas Vilniuje ne mažiau 2 metų?"),
       checkboxInput(
         "school",
         label = "Vienas iš tėvų mokosi bendrojo ugdymo mokykloje?"),
       # checkboxInput("city", label = "Deklaruotas mieste"),
-      checkboxInput("3more", label = "3 ir daugiau"),
+      checkboxInput("threemore", label = "3 ir daugiau"),
       checkboxInput("unable", label = "Žemas darbingumas"),
       conditionalPanel(
         condition = "input.city == 1", 
@@ -63,7 +64,6 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     mainPanel(
        #plotOutput("distPlot")
-      tableOutput("table"),
 
       fluidRow(
         column(6,
@@ -74,9 +74,11 @@ shinyUI(fluidPage(
                HTML('<input id="work-input" class="controls" type="text" placeholder="Darbovietės adresas">'),
                div(id='work-map')
         )
-      )
+      ),
+      #uiOutput("coords"),
+      DT::dataTableOutput("table")
     )
   ),
-  uiOutput("google_maps_API"),
-  uiOutput("coords")
+  uiOutput("google_maps_API")
+  
 ))
