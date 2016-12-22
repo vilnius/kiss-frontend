@@ -31,7 +31,7 @@ shinyServer(function(input, output) {
     connection_info <- readLines('private/google-api-key.csv')
     HTML(paste0(
             '<script async defer src=" https://maps.googleapis.com/maps/api/js?key=',
-            connection_info,'&callback=initMap"></script>'
+            connection_info,'&libraries=places&callback=initMap"></script>'
                 )
         )
   })

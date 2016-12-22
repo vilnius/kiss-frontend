@@ -25,13 +25,6 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      # strong("Gimimo data"),
-      # selectizeInput("birthyear", label = "Metai", 
-      #                choices = 2009:2017),
-      # selectizeInput("birthmonth", label = "Mėnuo", 
-      #                choices = 1:12),
-      # selectizeInput("birthday", label = "Diena",
-      #                choices = 1:30),
       dateInput("birthddate", "Gimimo data", min = "2009-01-01",
                 max = "2030-01-01"),
       selectizeInput("district", label = "Seniūnija",
@@ -64,10 +57,12 @@ shinyUI(fluidPage(
 
       fluidRow(
         column(6,
-               div(id='map')      
+               HTML('<input id="home-input" class="controls" type="text" placeholder="Namų adresas">'),
+               div(id='home-map')      
         ),
         column(6,
-               div(id='map2')
+               HTML('<input id="work-input" class="controls" type="text" placeholder="Darbovietės adresas">'),
+               div(id='work-map')
         )
       )
     )
