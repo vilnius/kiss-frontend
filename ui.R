@@ -18,6 +18,7 @@ shinyUI(fluidPage(
   tags$script(src = "addMap.js"),
   
   # Application title
+  #tags$img(src='')
   titlePanel("Kindergarten Info System (KISS)"),
   
   # Sidebar with a slider input for number of bins 
@@ -44,8 +45,15 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     mainPanel(
        #plotOutput("distPlot")
-      div(id='map')
-      ,div(id='map2')
+
+      fluidRow(
+        column(6,
+               div(id='map')      
+        ),
+        column(6,
+               div(id='map2')
+        )
+      )
     )
   ),
   uiOutput("google_maps_API")
