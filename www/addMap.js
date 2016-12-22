@@ -77,7 +77,16 @@ function initMap() {
               title: place.name,
               position: place.geometry.location
             }));
-
+            
+            //Sending location to Shiny
+            Shiny.onInputChange("marker_id", item.id);
+            Shiny.onInputChange("marker_lat", place.geometry.location.lat());
+            Shiny.onInputChange("marker_lng", place.geometry.location.lng());
+            /*
+            console.log("marker_id", item.id);
+            console.log("marker_lat", place.geometry.location.lat());
+            console.log("marker_lng", place.geometry.location.lng());
+*/
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
               bounds.union(place.geometry.viewport);
