@@ -42,5 +42,7 @@ shinyUI(fluidPage(
     mainPanel(
        #plotOutput("distPlot")
     )
+    
+    div(id="map")
   )
 ))
