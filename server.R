@@ -29,8 +29,18 @@ shinyServer(function(input, output) {
             connection_info,'&callback=initMap"></script>'
                 )
         )
-
+  })
+  
+  output$coords <- renderUI({
     
+    req(input$marker_id, input$marker_lat, input$marker_lng)
+    tagList(
+      div(input$marker_id),
+      div(input$marker_lat),
+      div(input$marker_lng)
+    )
+    
+    #browser()
   })
   
 })

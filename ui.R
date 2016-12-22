@@ -56,5 +56,6 @@ shinyUI(fluidPage(
       )
     )
   ),
-  uiOutput("google_maps_API")
+  uiOutput("google_maps_API"),
+  uiOutput("coords")
 ))

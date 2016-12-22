@@ -20,9 +20,9 @@ function initMap() {
           });
           
           google.maps.event.addListener(marker, 'dragend', function(ev){
-              console.log('********',item.id,'********');
-              console.log("lat: ", marker.position.lat());
-              console.log("lng: ", marker.position.lng());
+              Shiny.onInputChange("marker_id", item.id);
+              Shiny.onInputChange("marker_lat", marker.position.lat());
+              Shiny.onInputChange("marker_lng", marker.position.lng());
           });
         })
       }
