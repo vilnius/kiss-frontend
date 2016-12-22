@@ -6,10 +6,11 @@
 # 
 #    http://shiny.rstudio.com/
 #
-
+library(magrittr)
 library(shiny)
 
-seniunija <- readRDS("dists.RDS")
+seniunija <- readRDS("dists.RDS") %>% sort 
+darzeliai <- readRDS("darzeliai.RDS") %>% sort
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -38,13 +39,28 @@ shinyUI(fluidPage(
       checkboxInput("city", label = "Deklaruotas mieste"),
       checkboxInput("3more", label = "3 ir daugiau"),
       checkboxInput("unable", label = "Žemas darbingumas"),
-      checkboxInput("lonely", label = "Augina 1 iš tėvų"),
+      conditionalPanel(
+        condition = "input.city == 1", 
+        checkboxInput("lonely", label = "Augina 1 iš tėvų")
+      ),
+      checkboxInput("otherkids", label = "Ar turite kitų vaikų Vilniaus darželiuose?"),
+      conditionalPanel(
+        condition = "input.otherkids",
+        selectizeInput("otherkg", label = "Kuriuose?",
+                       choices = sort(darzeliai), multiple = TRUE)
+      ),
+      selectizeInput(
+        "language", label = "Kalba", 
+        choices = setNames(1:4, c("Hebrajų", "Lenkų", "Lietuvių", "Rusų")),
+        selected = 3),
+      checkboxInput("special", label = "Specialūs poreikiai"),
       actionButton("go", label = "Prognozuoti")
     ),
     
     # Show a plot of the generated distribution
     mainPanel(
        #plotOutput("distPlot")
+      tableOutput("table"),
 
       fluidRow(
         column(6,
