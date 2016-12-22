@@ -6,7 +6,7 @@
 # 
 #    http://shiny.rstudio.com/
 #
-
+library(magrittr)
 library(shiny)
 library(rgdal)
 library(data.table)
@@ -37,10 +37,31 @@ shinyServer(function(input, output) {
   # })
   observeEvent(input$go, {
     output$table <- renderTable({
-      distVincentyEllipsoid(tmp, c(25.275,54.693))
-      data.frame(a = 1:2, b = 3:4)
+      data.frame(
+        Darzelis = tmp@data, 
+        Atstumas = distVincentyEllipsoid(tmp, c(25.275,54.693))
+      )
     })
+  })
+  output$google_maps_API <- renderUI({
+    connection_info <- readLines('private/google-api-key.csv')
+    HTML(paste0(
+            '<script async defer src=" https://maps.googleapis.com/maps/api/js?key=',
+            connection_info,'&libraries=places&callback=initMap"></script>'
+                )
+        )
+  })
+  
+  output$coords <- renderUI({
     
+    req(input$marker_id, input$marker_lat, input$marker_lng)
+    tagList(
+      div(input$marker_id),
+      div(input$marker_lat),
+      div(input$marker_lng)
+    )
+    
+    #browser()
   })
   
   

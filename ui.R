@@ -6,16 +6,20 @@
 # 
 #    http://shiny.rstudio.com/
 #
-
+library(magrittr)
 library(shiny)
 
-seniunija <- readRDS("dists.RDS") %>% sort
+seniunija <- readRDS("dists.RDS") %>% sort 
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
+  tags$link(rel = "stylesheet", type = "text/css", href = "maps.css"),
+  tags$script(src = "addMap.js"),
+  
   # Application title
+  #tags$img(src='')
   titlePanel("Kindergarten Info System (KISS)"),
   
   # Sidebar with a slider input for number of bins 
@@ -59,7 +63,20 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     mainPanel(
        #plotOutput("distPlot")
-      tableOutput("table")
+      tableOutput("table"),
+
+      fluidRow(
+        column(6,
+               HTML('<input id="home-input" class="controls" type="text" placeholder="Namų adresas">'),
+               div(id='home-map')      
+        ),
+        column(6,
+               HTML('<input id="work-input" class="controls" type="text" placeholder="Darbovietės adresas">'),
+               div(id='work-map')
+        )
+      )
     )
-  )
+  ),
+  uiOutput("google_maps_API"),
+  uiOutput("coords")
 ))
