@@ -8,6 +8,19 @@
 #
 
 library(shiny)
+library(rgdal)
+library(data.table)
+library(geosphere)
+darzeliai <- readRDS("darzeliai.RDS") %>% sort
+allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
+allkg1 <- allkg %>% filter(LABEL %in% darzeliai) %>% 
+  select(LABEL, GIS_X, GIS_Y) %>% filter(GIS_X != 0)
+coordinates(allkg1) <- c("GIS_X", "GIS_Y")
+proj4string(allkg1) <- CRS("+init=EPSG:3346")
+tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
+#apply(tmp@data, 1, function(x, ))
+
+
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -24,8 +37,10 @@ shinyServer(function(input, output) {
   # })
   observeEvent(input$go, {
     output$table <- renderTable({
+      distVincentyEllipsoid(tmp, c(25.275,54.693))
       data.frame(a = 1:2, b = 3:4)
     })
+    
   })
   
   
