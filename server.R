@@ -12,9 +12,12 @@ library(rgdal)
 library(data.table)
 library(geosphere)
 library(DT)
+library(dplyr)
+library(dtplyr)
+
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
-allkg1 <- allkg %>% filter(LABEL %in% darzeliai) %>% 
+allkg1 <- data.frame(allkg) %>% filter(LABEL %in% darzeliai) %>% 
   select(LABEL, GIS_X, GIS_Y) %>% filter(GIS_X != 0)
 coordinates(allkg1) <- c("GIS_X", "GIS_Y")
 proj4string(allkg1) <- CRS("+init=EPSG:3346")
