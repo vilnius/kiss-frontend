@@ -52,9 +52,6 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-       #plotOutput("distPlot")
-      tableOutput("table"),
-
       fluidRow(
         column(6,
                HTML('<input id="home-input" class="controls" type="text" placeholder="Namų adresas">'),
@@ -64,7 +61,10 @@ shinyUI(fluidPage(
                HTML('<input id="work-input" class="controls" type="text" placeholder="Darbovietės adresas">'),
                div(id='work-map')
         )
-      )
+      ),
+      #plotOutput("distPlot")
+      tags$h4("Results"),
+      tableOutput("table")
     )
   ),
   uiOutput("google_maps_API"),

@@ -24,8 +24,8 @@ shinyServer(function(input, output) {
   # })
   observeEvent(input$go, {
     output$table <- renderTable({
-      data.frame(a = 1:2, b = 3:4)
-    })
+      data.frame(a = 1:3, b = 4:6, c=7:9)
+    }, striped=TRUE)
   })
   output$google_maps_API <- renderUI({
     connection_info <- readLines('private/google-api-key.csv')
@@ -45,7 +45,6 @@ shinyServer(function(input, output) {
       div(input$marker_lng)
     )
     
-    #browser()
   })
   
 })
