@@ -13,7 +13,9 @@ function initMap() {
         mapArray.forEach(function(item, index){
           var map = new google.maps.Map(document.getElementById(item.id), {
             zoom: 13,
-            mapTypeId: 'roadmap',
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            streetViewControl: false,
             center: item.position
           });
           var marker = new google.maps.Marker({
@@ -39,8 +41,8 @@ function initMap() {
           });
           
           var markers = [];
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
+        // Listen for the event fired when the user selects a prediction and
+        // retrieve more details for that place.
         searchBox.addListener('places_changed', function() {
           var places = searchBox.getPlaces();
 
@@ -82,11 +84,7 @@ function initMap() {
             Shiny.onInputChange("marker_id", item.id);
             Shiny.onInputChange("marker_lat", place.geometry.location.lat());
             Shiny.onInputChange("marker_lng", place.geometry.location.lng());
-            /*
-            console.log("marker_id", item.id);
-            console.log("marker_lat", place.geometry.location.lat());
-            console.log("marker_lng", place.geometry.location.lng());
-*/
+            
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
               bounds.union(place.geometry.viewport);
