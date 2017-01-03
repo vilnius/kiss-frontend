@@ -19,7 +19,7 @@ shinyUI(fluidPage(
   tags$script(src = "addMap.js"),
   
   # Application title
-  #tags$img(src='')
+  tags$img(src='vilnius-logo.svg', class="city-logo"),
   titlePanel("Kindergarten Info System (KISS)"),
   
   # Sidebar with a slider input for number of bins 
