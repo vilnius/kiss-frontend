@@ -20,7 +20,7 @@ allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- data.frame(allkg) %>% filter(LABEL %in% darzeliai) %>% 
   select(LABEL, GIS_X, GIS_Y) %>% filter(GIS_X != 0)
 coordinates(allkg1) <- c("GIS_X", "GIS_Y")
-proj4string(allkg1) <- CRS("+init=EPSG:3346")
+proj4string(allkg1) <- CRS("+init=epsg:3346")
 tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 #apply(tmp@data, 1, function(x, ))
 
