@@ -10,15 +10,17 @@ library(magrittr)
 library(shiny)
 library(rgdal)
 library(data.table)
+library(sp)
 library(geosphere)
 library(DT)
 library(dplyr)
+library(dtplyr)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- allkg %>% filter(LABEL %in% darzeliai) %>% 
   select(LABEL, GIS_X, GIS_Y) %>% filter(GIS_X != 0)
 coordinates(allkg1) <- c("GIS_X", "GIS_Y")
-proj4string(allkg1) <- CRS("+init=EPSG:3346")
+proj4string(allkg1) <- CRS("+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9998 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 #apply(tmp@data, 1, function(x, ))
 
@@ -38,12 +40,12 @@ shinyServer(function(input, output) {
       } else if (input$city == "3") {
         prio <- prio + 1e3
       }
-      age <- (Sys.Date() - input$birthddate) %>% as.integer %>% 
+      age <- (Sys.Date() - input$birthddate) %>% as.integer %>%
         `%/%`(365)
       req(rv$home)
       req(rv$work)
       kgs <- data.frame(
-        Darzelis = tmp@data, 
+        Darzelis = tmp@data,
         Namai = distVincentyEllipsoid(tmp, rv$home)/1e3,
         Darbas = distVincentyEllipsoid(tmp, rv$work)/1e3
       )
@@ -63,7 +65,7 @@ shinyServer(function(input, output) {
     req(input$marker_id == "home-map")
     rv$home <- c(input$marker_lng, input$marker_lat)
   })
-  
+
   observeEvent(input$marker_lat, {
     req(input$marker_lat)
     req(input$marker_id == "work-map")
