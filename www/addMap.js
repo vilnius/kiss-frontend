@@ -73,10 +73,18 @@ function initMap() {
             // Create a marker for each place.
             markers.push(new google.maps.Marker({
               map: map,
-              icon: icon,
+              //icon: icon,
               title: place.name,
-              position: place.geometry.location
+              position: place.geometry.location,
+              draggable: true
             }));
+            
+            markers.forEach(function(marker) {
+              Shiny.onInputChange("marker_id", item.id);
+              Shiny.onInputChange("marker_lat", marker.position.lat());
+              Shiny.onInputChange("marker_lng", marker.position.lng());
+            });
+            
 
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
