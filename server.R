@@ -17,10 +17,10 @@ library(dplyr)
 library(dtplyr)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
-allkg1 <- allkg %>% filter(LABEL %in% darzeliai) %>% 
+allkg1 <- data.frame(allkg) %>% filter(LABEL %in% darzeliai) %>% 
   select(LABEL, GIS_X, GIS_Y) %>% filter(GIS_X != 0)
 coordinates(allkg1) <- c("GIS_X", "GIS_Y")
-proj4string(allkg1) <- CRS("+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9998 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+proj4string(allkg1) <- CRS("+init=epsg:3346")
 tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 #apply(tmp@data, 1, function(x, ))
 
