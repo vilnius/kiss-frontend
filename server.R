@@ -12,6 +12,7 @@ library(rgdal)
 library(data.table)
 library(geosphere)
 library(DT)
+library(dplyr)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- allkg %>% filter(LABEL %in% darzeliai) %>% 
