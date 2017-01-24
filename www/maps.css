@@ -1,3 +1,11 @@
+body{
+  font-size: 12px;
+}
+
+h2{
+  font-size: 24px;
+}
+
 #home-map, #work-map{
   height:100%;
   width:100%;
@@ -35,6 +43,8 @@
 
 .city-logo{
   float:right;
+  width: 50px;
+  margin-top: 9px;
 }
 
 .col-sm-4 .well{
