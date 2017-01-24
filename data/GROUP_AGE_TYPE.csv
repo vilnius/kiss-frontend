@@ -1,0 +1,37 @@
+ID;LABEL;AGEFROM;AGETO;CHILDSCOUNT;ORDERING;;
+1;Iki 1;0;1;1;6;10;1
+3;Nuo 1;1;99;6;3;15;11
+4;Nuo 3 iki 7 metu;3;7;20;21;;
+5;Skirtingo amﾞiaus iki 3-eju metu;0;3;8;2;;
+6;Nuo 3 iki 4 metu;3;4;20;19;;
+7;Nuo 4 iki 5 metu;4;5;20;22;;
+8;Nuo 5 iki 6 metu;5;6;20;25;;
+9;Nuo 6 iki 7 metu;6;7;20;27;;
+10;Nuo 3 iki 5 metu;3;5;20;20;;
+11;Nuo 5 iki 7 metu;5;7;20;26;;
+12;Nuo 2 iki 3 metu;2;3;20;15;;
+13;Nuo 4 iki 6 metu;4;6;20;23;;
+14;Nuo 3 iki 6 metu;3;6;20;20;;
+15;Nuo 6 iki 8 metu;6;8;20;28;;
+16;Nuo 4 iki 7 metu;4;7;20;24;;
+17;Nuo 1 iki 2 metu;1;2;15;5;;
+18;Nuo 2 iki 4 metu;2;4;20;16;;
+19;Nuo 2 iki 5 metu;2;5;20;17;;
+20;Nuo 2 iki 6 metu;2;6;20;18;;
+21;Nuo 1 iki 5 metu;1;5;20;7;;
+22;Nuo 1 iki 6 metu;1;6;20;8;;
+23;Nuo 1;5;6;6;6;20;13
+24;Nuo 1 iki 3 metu;1;3;8;6;;
+25;Nuo 1;1;99;6;7;20;14
+26;Nuo 1;1;99;6;5;20;12
+27;Nuo 1;1;99;6;2;15;10
+28;Nuo 1 iki 7 metu;1;7;20;9;;
+29;Nuo 0;0;99;8;2;15;3
+30;Nuo 0;0;99;8;5;20;4
+40;Nuo 8 iki 10 metu;8;10;15;1;;
+41;Nuo 10 iki 12 metu;10;12;15;2;;
+42;Nuo 12 iki 14 metu;12;14;15;3;;
+43;Nuo 14 iki 16 metu;14;16;15;4;;
+44;Nuo 16 iki 18 metu;16;18;15;5;;
+45;Nuo 8m.;8;99;99;20;29;
+46;Nuo 1 iki 8 metu;1;8;20;30;;
