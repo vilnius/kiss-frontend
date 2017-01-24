@@ -65,12 +65,9 @@ d$BIRTHDATE <- date(d$BIRTHDATE)
 d$age.of.child <- ((date("2017-01-01") - d$BIRTHDATE) / 365) %>% floor %>% as.numeric
 d$is.from.1.to.3 <- ifelse(d$age.of.child < 3,"below.3","more.3")
 
-empty.slots <- data.frame("SCH" = sort(unique(d$SCH)),
-                          "slots.from.1.to.3" = 5,
-                          "slots.from.3.to.inf" = 5,
-                          "all.from.1.to.3" = 20,
-                          "all.from.3.to.inf" = 20,
-                          check.names = F)
+empty.slots <- ddply(empty.slots, ~ SCH, function(xframe) {
+  return(apply(xframe[,-1:-3],2,sum))
+})
 
 # names(empty.slots)[6] <- "kg_name"
 d <- merge(d, empty.slots, all.x = T)
