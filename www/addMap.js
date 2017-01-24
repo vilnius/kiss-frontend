@@ -14,6 +14,8 @@ function initMap() {
           var map = new google.maps.Map(document.getElementById(item.id), {
             zoom: 13,
             mapTypeId: 'roadmap',
+            panControl: false,
+            streetViewControl: false,
             center: item.position
           });
           var marker = new google.maps.Marker({
