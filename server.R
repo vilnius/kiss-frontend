@@ -162,7 +162,7 @@ shinyServer(function(input, output) {
                total.slots) %>% 
         left_join(allkg %>% select(ID, LABEL, GIS_X, GIS_Y, BUILDDATE, 
                                    `LEFT(ADDRESS, 256)`), 
-                  by = c("SCH" = "ID")) %>% slice(1:20)
+                  by = c("SCH" = "ID")) #%>% slice(1:20)
       
       coordinates(zz) <- c("GIS_X", "GIS_Y")
       proj4string(zz) <- CRS("+init=epsg:3346")
