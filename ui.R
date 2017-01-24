@@ -98,6 +98,8 @@ shinyUI(fluidPage(
       ),
       #plotOutput("distPlot")
       uiOutput("priority"),
+      uiOutput("disclaimer"),
+      tags$br(),
       uiOutput("no_work_home"),
       tags$h4("Rezultatai"),
       DT::dataTableOutput("table")

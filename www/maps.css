@@ -1,3 +1,11 @@
+body{
+  font-size: 12px;
+}
+
+h2{
+  font-size: 24px;
+}
+
 #home-map, #work-map{
   height:100%;
   width:100%;
@@ -35,6 +43,8 @@
 
 .city-logo{
   float:right;
+  width: 50px;
+  margin-top: 9px;
 }
 
 .col-sm-4 .well{
@@ -62,5 +72,15 @@
 }
 
 #home-input, #work-input{
-  top:5px;
+  top:5px!important;
+}
+
+.warning-disclaimer{
+  font-style: italic;
+  font-size: 11px;
+}
+#no_work_home div{
+  border:1px solid #c1272d;
+  color:#c1272d;
+  padding: 1px 0 0 5px;
 }
