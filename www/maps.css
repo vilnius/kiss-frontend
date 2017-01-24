@@ -60,3 +60,7 @@
     border: 2px solid white;
     border-radius: 0;
 }
+
+#home-input, #work-input{
+  top:5px;
+}
