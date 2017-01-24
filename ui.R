@@ -27,7 +27,9 @@ shinyUI(fluidPage(
   ga('send', 'pageview');"),
   
   # Application title
-  tags$img(src='vilnius-logo.svg', class="city-logo"),
+  tags$a(
+    tags$img(src='vilnius-logo.svg', class="city-logo"),
+    href="http://www.vilnius.lt"),
   titlePanel("Kindergarten Info System (KISS)"),
   
   # Sidebar with a slider input for number of bins 
