@@ -15,6 +15,9 @@ library(geosphere)
 library(DT)
 library(dplyr)
 library(dtplyr)
+library(lubridate)
+library(readxl)
+library(jsonlite)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- data.frame(allkg) %>% filter(LABEL %in% darzeliai) %>% 
@@ -24,6 +27,21 @@ proj4string(allkg1) <- CRS("+init=epsg:3346")
 tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 #apply(tmp@data, 1, function(x, ))
 
+# d <- read.csv(file = "data/priority_from_json.csv",
+#               check.names = FALSE, stringsAsFactors = FALSE)
+# 
+# gat <- read.csv(file = "data/GROUP_AGE_TYPE.csv",
+#                 sep = ";", encoding = "UTF-8", na.strings = c("", "NA"), 
+#                 check.names = FALSE, stringsAsFactors = FALSE)
+# 
+# laukiantys <- read.csv(file = "data/laukianciuju_eileje_ataskaita.csv",
+#                        sep = ";", encoding = "UTF-8", na.strings = c("", "NA"), 
+#                        check.names = FALSE, stringsAsFactors = FALSE)
+# 
+# # this input comes from karolis&raminta
+# empty.slots <- read.csv(file = "data/vietos.csv",
+#                         sep = ";", encoding = "UTF-8", na.strings = c("", "NA"), 
+#                         check.names = FALSE, stringsAsFactors = FALSE)
 
 
 # Define server logic required to draw a histogram
