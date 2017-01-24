@@ -18,6 +18,10 @@ seniunija <- fread("data/seniunijos.csv", encoding = "UTF-8")
 darzeliai <- fread("data/darzeliai.csv", encoding = "UTF-8") %>% 
   arrange(LABEL)
 
+md <- format(Sys.Date(), "%m-%d")
+curyear <- format(Sys.Date(), "%Y") %>% as.numeric
+year <- ifelse(md > "06-01", curyear + 1, curyear)
+
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
@@ -36,7 +40,8 @@ shinyUI(fluidPage(
   tags$a(
     tags$img(src='vilnius-logo.svg', class="city-logo"),
     href="http://www.vilnius.lt"),
-  titlePanel("Kindergarten Info System (KISS)"),
+  
+  titlePanel(paste("Darželių eilių prognozė", year, " metams (KISS)")),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
@@ -57,11 +62,11 @@ shinyUI(fluidPage(
         "school",
         label = "Vienas iš tėvų mokosi bendrojo ugdymo mokykloje?"),
       # checkboxInput("citydeclared", label = "Deklaruotas mieste"),
-      checkboxInput("threemore", label = "3 ir daugiau"),
-      checkboxInput("unable", label = "Žemas darbingumas"),
+      checkboxInput("threemore", label = "3 ir daugiau vaikų"),
+      checkboxInput("unable", label = "Žemas darbingumo lygis"),
       conditionalPanel(
         condition = "input.city == 1", 
-        checkboxInput("lonely", label = "Augina 1 iš tėvų")
+        checkboxInput("lonely", label = "Augina vienas iš tėvų")
       ),
       checkboxInput("otherkids", label = "Ar turite kitų vaikų Vilniaus darželiuose?"),
       conditionalPanel(
