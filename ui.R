@@ -67,6 +67,7 @@ shinyUI(fluidPage(
         choices = setNames(1:4, c("Hebrajų", "Lenkų", "Lietuvių", "Rusų")),
         selected = 3),
       checkboxInput("special", label = "Specialūs poreikiai"),
+      checkboxInput("disclaimer", label = "Suprantu, kad šis įrankis yra tik rekomendacinio pobūdžio, ir tikroji eilė gali skirtis nuo prognozuojamos."),
       actionButton("go", label = "Prognozuoti")
     ),
     
@@ -84,7 +85,8 @@ shinyUI(fluidPage(
       ),
       #plotOutput("distPlot")
       uiOutput("priority"),
-      tags$h4("Results"),
+      uiOutput("no_work_home"),
+      tags$h4("Rezultatai"),
       DT::dataTableOutput("table")
     )
   ),

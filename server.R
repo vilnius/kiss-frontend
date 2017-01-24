@@ -81,6 +81,17 @@ shinyServer(function(input, output) {
   rv <- reactiveValues()
   
   observeEvent(input$go, {
+    if (!input$disclaimer) {
+      # insertUI("#modal", where = "afterBegin",
+      #          ui = )
+      showModal(modalDialog(
+        title = NULL,
+        "Paspauskite sutikimą šalia mygtuko prognozuoti!",
+        footer = modalButton("Uždaryti")
+      ))
+    }
+    req(input$disclaimer)
+    
     output$table <- DT::renderDataTable({
       prio <- input$twoyears + input$school + input$threemore +
         input$unable + input$lonely + (length(input$otherkids) > 0)
@@ -91,8 +102,8 @@ shinyServer(function(input, output) {
       }
       input.age.of.child <- (Sys.Date() - input$birthdate) %>% 
         as.integer %>% `%/%`(365)
-      req(rv$home)
-      req(rv$work)
+      # req(rv$home)
+      # req(rv$work)
       # leaving d columns that we need
       
       output$priority <- renderUI({
@@ -105,8 +116,6 @@ shinyServer(function(input, output) {
       # sub.d <- subset(d, input.age.of.child >= AGEFROM & input.age.of.child <= AGETO) 
       
       # estimate rank number in each kg x group
-      
-      # browser()
       
       rank.enroll <- ddply(d[d$SCH_ORDERING == 1 & d$is.from.1.to.3 == input.age.type,], ~ SCH, function(xframe) {
         xframe <<- xframe
@@ -154,34 +163,60 @@ shinyServer(function(input, output) {
       
       zz <- arrange(rank.enroll, desc(enrolled.or.not),place.in.queue,desc(free.slots))
       
+      if (!is.null(rv$work) & !is.null(rv$home)) {
+        zz <- zz %>% filter(enrolled.or.not == "Yes") %>% 
+          select(SCH, place.in.queue, free.slots, 
+                 total.in.queue.with.first.priority,
+                 total.slots) %>% 
+          left_join(allkg %>% select(ID, LABEL, GIS_X, GIS_Y, BUILDDATE, 
+                                     `LEFT(ADDRESS, 256)`), 
+                    by = c("SCH" = "ID")) #%>% slice(1:20)
+        
+        coordinates(zz) <- c("GIS_X", "GIS_Y")
+        proj4string(zz) <- CRS("+init=epsg:3346")
+        tmp <- spTransform(zz, CRS("+proj=longlat +datum=WGS84"))
+        
+        kgs <- data.frame(
+          Darzelis = tmp@data$LABEL,
+          Eile = tmp@data$place.in.queue,
+          `Viso eileje` = tmp@data$total.in.queue.with.first.priority,
+          laisvos = tmp@data$free.slots,
+          total = tmp@data$total.slots,
+          `Statybos metai` = tmp@data$BUILDDATE,
+          Adresas = tmp@data$`LEFT(ADDRESS, 256)`,
+          Namai = round(distVincentyEllipsoid(tmp, rv$home)/1e3, 1),
+          Darbas = round(distVincentyEllipsoid(tmp, rv$work)/1e3, 1)
+        )
+        names(kgs) <- c("Darželis", "Eilė", "Viso eilėje","Laisvos vietos",
+                        "Viso vietų", "Statybos metai",
+                        "Adresas","Namai", "Darbas")
+        removeUI("#no_work_home")
+      } else {
+        output$no_work_home <- renderUI({
+          div("Neįvedėte namų arba darbo adreso, todėl negalime apskaičiuoti atstumų iki darželių",
+              style="border:1px solid #c1272d;color:#c1272d;")
+        })
+        zz <- zz %>% filter(enrolled.or.not == "Yes") %>% 
+          select(SCH, place.in.queue, free.slots, 
+                 total.in.queue.with.first.priority,
+                 total.slots) %>% 
+          left_join(allkg %>% select(ID, LABEL, BUILDDATE, 
+                                     `LEFT(ADDRESS, 256)`), 
+                    by = c("SCH" = "ID"))
+        
+        kgs <- data.frame(
+          Darzelis = zz$LABEL,
+          Eile = zz$place.in.queue,
+          `Viso eileje` = zz$total.in.queue.with.first.priority,
+          laisvos = zz$free.slots,
+          total = zz$total.slots,
+          `Statybos metai` = zz$BUILDDATE,
+          Adresas = zz$`LEFT(ADDRESS, 256)`
+        )
+        names(kgs) <- c("Darželis", "Eilė", "Viso eilėje","Laisvos vietos",
+                        "Viso vietų", "Statybos metai","Adresas")
+      }
       
-      
-      zz <- zz %>% filter(enrolled.or.not == "Yes") %>% 
-        select(SCH, place.in.queue, free.slots, 
-               total.in.queue.with.first.priority,
-               total.slots) %>% 
-        left_join(allkg %>% select(ID, LABEL, GIS_X, GIS_Y, BUILDDATE, 
-                                   `LEFT(ADDRESS, 256)`), 
-                  by = c("SCH" = "ID")) #%>% slice(1:20)
-      
-      coordinates(zz) <- c("GIS_X", "GIS_Y")
-      proj4string(zz) <- CRS("+init=epsg:3346")
-      tmp <- spTransform(zz, CRS("+proj=longlat +datum=WGS84"))
-      
-      kgs <- data.frame(
-        Darzelis = tmp@data$LABEL,
-        Eile = tmp@data$place.in.queue,
-        `Viso eileje` = tmp@data$total.in.queue.with.first.priority,
-        laisvos = tmp@data$free.slots,
-        total = tmp@data$total.slots,
-        `Statybos metai` = tmp@data$BUILDDATE,
-        Adresas = tmp@data$`LEFT(ADDRESS, 256)`,
-        Namai = round(distVincentyEllipsoid(tmp, rv$home)/1e3, 1),
-        Darbas = round(distVincentyEllipsoid(tmp, rv$work)/1e3, 1)
-      )
-      names(kgs) <- c("Darželis", "Eilė", "Viso eilėje","Laisvos vietos",
-                      "Viso vietų", "Statybos metai",
-                      "Adresas","Namai", "Darbas")
       kgs
     })
   })
