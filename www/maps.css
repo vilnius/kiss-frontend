@@ -79,3 +79,8 @@ h2{
   font-style: italic;
   font-size: 11px;
 }
+#no_work_home div{
+  border:1px solid #c1272d;
+  color:#c1272d;
+  padding: 1px 0 0 5px;
+}

@@ -206,8 +206,7 @@ shinyServer(function(input, output) {
         removeUI("#no_work_home")
       } else {
         output$no_work_home <- renderUI({
-          div("Neįvedėte namų arba darbo adreso, todėl negalime apskaičiuoti atstumų iki darželių",
-              style="border:1px solid #c1272d;color:#c1272d;")
+          div("Neįvedėte namų arba darbo adreso, todėl negalime apskaičiuoti atstumų iki darželių")
         })
         zz <- zz %>% filter(enrolled.or.not == "Yes") %>% 
           select(SCH, place.in.queue, free.slots, 
