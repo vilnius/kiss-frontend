@@ -9,6 +9,8 @@
 library(magrittr)
 library(shiny)
 library(data.table)
+library(dplyr)
+library(dtplyr)
 
 #seniunija <- readRDS("dists.RDS") %>% sort 
 seniunija <- fread("data/seniunijos.csv", encoding = "UTF-8")
