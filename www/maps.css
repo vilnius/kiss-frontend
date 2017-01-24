@@ -64,3 +64,8 @@
 #home-input, #work-input{
   top:5px;
 }
+
+.warning-disclaimer{
+  font-style: italic;
+  font-size: 11px;
+}

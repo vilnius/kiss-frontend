@@ -108,6 +108,11 @@ shinyServer(function(input, output) {
         p(strong("Jūsų prioritetas:"), prio)
       })
       
+      output$disclaimer <- renderUI({
+        disclaim <- 'Žemiau pateikti rezultatai galioja su sąlyga, kad darželis bus nurodytas 1 prioritetu. Registruojantis į eilę, rekomenduojame 1 prioritetu nurodyti darželį, į kurį turite didžiausias galimybes pakliūti pagal žemiau pateiktus rezultatus. Jeigu į jį nepateksite, pakliūti į 2 ir žemesniais prioritetais nurodytus darželius tikimybė bus kur kas mažesnė.'
+        div(disclaim, class="warning-disclaimer")
+      })
+      
       input.add <- allkg %>% select(SCH = ID, elderate = ELDERATE_ID) %>% 
         mutate(add = ifelse(elderate %in% input$district, 1, 0) + 
                  ifelse(SCH %in% input$otherkg, 1, 0)) %>% 
