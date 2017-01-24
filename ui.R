@@ -8,7 +8,6 @@
 #
 library(magrittr)
 library(shiny)
-library(DT)
 
 seniunija <- readRDS("dists.RDS") %>% sort 
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
@@ -20,7 +19,7 @@ shinyUI(fluidPage(
   tags$script(src = "addMap.js"),
   
   # Application title
-  #tags$img(src='')
+  tags$img(src='vilnius-logo.svg', class="city-logo"),
   titlePanel("Kindergarten Info System (KISS)"),
   
   # Sidebar with a slider input for number of bins 
@@ -30,18 +29,8 @@ shinyUI(fluidPage(
                 max = "2030-01-01"),
       selectizeInput("district", label = "Seniūnija",
                      choices = seniunija),
-      selectizeInput(
-        "city", label = "Deklaruoti mieste", 
-        choices = setNames(1:3, c("Abu tėvai", "Vienas iš tėvų",
-                                  "Nei vienas iš tėvų"))),
-      checkboxInput(
-        "twoyears", 
-        label = "Bent vienas iš tėvų registruotas Vilniuje ne mažiau 2 metų?"),
-      checkboxInput(
-        "school",
-        label = "Vienas iš tėvų mokosi bendrojo ugdymo mokykloje?"),
-      # checkboxInput("city", label = "Deklaruotas mieste"),
-      checkboxInput("threemore", label = "3 ir daugiau"),
+      checkboxInput("city", label = "Deklaruotas mieste"),
+      checkboxInput("3more", label = "3 ir daugiau"),
       checkboxInput("unable", label = "Žemas darbingumas"),
       conditionalPanel(
         condition = "input.city == 1", 
@@ -63,8 +52,6 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-       #plotOutput("distPlot")
-
       fluidRow(
         column(6,
                HTML('<input id="home-input" class="controls" type="text" placeholder="Namų adresas">'),
@@ -75,10 +62,11 @@ shinyUI(fluidPage(
                div(id='work-map')
         )
       ),
-      #uiOutput("coords"),
-      DT::dataTableOutput("table")
+      #plotOutput("distPlot")
+      tags$h4("Results"),
+      tableOutput("table")
     )
   ),
-  uiOutput("google_maps_API")
-  
+  uiOutput("google_maps_API"),
+  uiOutput("coords")
 ))

@@ -6,7 +6,8 @@
 }
 
 .controls {
-  margin-top: 10px;
+  margin-top: 5px;
+  margin-left:5px;
   border: 1px solid transparent;
   border-radius: 2px 0 0 2px;
   box-sizing: border-box;
@@ -30,4 +31,32 @@
 
 #pac-input:focus {
   border-color: #4d90fe;
+}
+
+.city-logo{
+  float:right;
+}
+
+.col-sm-4 .well{
+  background-color: #c1272d;
+  border-radius: 0;
+  color:#fff;
+}
+
+.col-sm-4 .well .dropdown-menu,
+.col-sm-4 .well .selectize-input,
+.col-sm-4 .well .form-control {
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 0;
+}
+
+.col-sm-4 .well .btn-default {
+    color: #fff;
+    background-color: #c1272d;
+    border-color: #fff;
+}
+
+.col-sm-4 .well .btn{
+    border: 2px solid white;
+    border-radius: 0;
 }
