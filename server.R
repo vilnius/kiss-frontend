@@ -27,6 +27,7 @@ coordinates(allkg1) <- c("GIS_X", "GIS_Y")
 proj4string(allkg1) <- CRS("+init=epsg:3346")
 tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 #apply(tmp@data, 1, function(x, ))
+seniunija <- fread("data/seniunijos.csv", encoding = "UTF-8")
 
 d <- read.csv(file = "data/priority_from_json.csv",
               check.names = FALSE, stringsAsFactors = FALSE)
@@ -93,8 +94,8 @@ shinyServer(function(input, output) {
     req(input$disclaimer)
     
     output$table <- DT::renderDataTable({
-      prio <- input$twoyears + input$school + input$threemore +
-        input$unable + input$lonely + (length(input$otherkids) > 0)
+      prio <- input$school + input$threemore +
+        input$unable + input$lonely# + (length(input$otherkids) > 0)
       if(input$city == "2") {
         prio <- prio + 1e2
       } else if (input$city == "1") {
@@ -110,6 +111,11 @@ shinyServer(function(input, output) {
         p(strong("Jūsų prioritetas:"), prio)
       })
       
+      input.add <- allkg %>% select(SCH = ID, elderate = ELDERATE_ID) %>% 
+        mutate(add = ifelse(elderate %in% input$district, 1, 0) + 
+                 ifelse(SCH %in% input$otherkg, 1, 0)) %>% 
+        select(SCH, add) %>% data.frame
+      
       input.priority <- prio
       input.birth.date <- input$birthdate
       input.age.type <- ifelse(input.age.of.child <=3,"below.3","more.3")
@@ -119,26 +125,31 @@ shinyServer(function(input, output) {
       
       rank.enroll <- ddply(d[d$SCH_ORDERING == 1 & d$is.from.1.to.3 == input.age.type,], ~ SCH, function(xframe) {
         xframe <<- xframe
-        
         # cat(paste("Ranking in: SCH -", xframe$SCH[1], sep = " "),"\n")
         
         from.which.to.remove <- ifelse(input.age.type == "below.3","slots.from.1.to.3","slots.from.3.to.inf")
         free.space <- xframe[1,from.which.to.remove]
         total.space <- xframe[1,paste0("all.",gsub("slots.","",from.which.to.remove))]
         
+        add.to.prior <- input.add[input.add$SCH == xframe$SCH[1], 2]
+          
+        
         # if (free.space == 0 | is.na(free.space)) {
         #   print("No space left")
         # } else {
         
         # filling birth dates, where missing
-        if(any(!is.na(xframe$BIRTHDATE))) {
-          xframe[is.na(xframe$BIRTHDATE),"BIRTHDATE"] <- max(xframe$BIRTHDATE,na.rm = T)
-        } else {
-          xframe$born.date <- input.birth.date # if there are kg and group, where all childs birth dates are missing
-        }
+        # if(any(!is.na(xframe$BIRTHDATE))) {
+        #   xframe[is.na(xframe$BIRTHDATE),"BIRTHDATE"] <- max(xframe$BIRTHDATE,na.rm = T)
+        # } else {
+        #   xframe$born.date <- input.birth.date # if there are kg and group, where all childs birth dates are missing
+        # }
+        
+        # rank.frame <- rbind(data.frame(xframe[,c("FINAL_PRIORITY","BIRTHDATE")],target = 0),
+        #                     data.frame(FINAL_PRIORITY = input.priority,BIRTHDATE = input.birth.date, target = 1))
         
         rank.frame <- rbind(data.frame(xframe[,c("FINAL_PRIORITY","BIRTHDATE")],target = 0),
-                            data.frame(FINAL_PRIORITY = input.priority,BIRTHDATE = input.birth.date, target = 1))
+                            data.frame(FINAL_PRIORITY = input.priority + add.to.prior,BIRTHDATE = input.birth.date, target = 1))
         
         rank.frame <- arrange(rank.frame, desc(FINAL_PRIORITY), BIRTHDATE) # after priority, youngest get first in a queue
         

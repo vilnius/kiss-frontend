@@ -9,8 +9,11 @@
 library(magrittr)
 library(shiny)
 
-seniunija <- readRDS("dists.RDS") %>% sort 
-darzeliai <- readRDS("darzeliai.RDS") %>% sort
+#seniunija <- readRDS("dists.RDS") %>% sort 
+seniunija <- fread("data/seniunijos.csv", encoding = "UTF-8")
+# darzeliai <- readRDS("darzeliai.RDS") %>% sort
+darzeliai <- fread("data/darzeliai.csv", encoding = "UTF-8") %>% 
+  arrange(LABEL)
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -37,15 +40,16 @@ shinyUI(fluidPage(
     sidebarPanel(
       dateInput("birthdate", "Gimimo data", min = "2009-01-01",
                 max = "2030-01-01"),
-      selectizeInput("district", label = "Seniūnija",
-                     choices = seniunija),
+      selectizeInput("district", label = "Pasirinkite seniūnijas, kuriose bent vienas iš tėvų registruotas ne mažiau 2 metų",
+                     choices = setNames(seniunija$ID, seniunija$LABEL), 
+                     multiple = TRUE),
       selectizeInput(
         "city", label = "Deklaruoti mieste",
         choices = setNames(1:3, c("Abu tėvai", "Vienas iš tėvų",
                                   "Nei vienas iš tėvų"))),
-      checkboxInput(
-        "twoyears",
-        label = "Bent vienas iš tėvų registruotas Vilniuje ne mažiau 2 metų?"),
+      # checkboxInput(
+      #   "twoyears",
+      #   label = "Bent vienas iš tėvų registruotas Vilniuje ne mažiau 2 metų?"),
       checkboxInput(
         "school",
         label = "Vienas iš tėvų mokosi bendrojo ugdymo mokykloje?"),
@@ -60,7 +64,8 @@ shinyUI(fluidPage(
       conditionalPanel(
         condition = "input.otherkids",
         selectizeInput("otherkg", label = "Kuriuose?",
-                       choices = sort(darzeliai), multiple = TRUE)
+                       choices = setNames(darzeliai$ID, darzeliai$LABEL), 
+                       multiple = TRUE)
       ),
       selectizeInput(
         "language", label = "Kalba", 
