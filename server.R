@@ -195,9 +195,8 @@ shinyServer(function(input, output) {
           Namai = round(distVincentyEllipsoid(tmp, rv$home)/1e3, 1),
           Darbas = round(distVincentyEllipsoid(tmp, rv$work)/1e3, 1)
         )
-        names(kgs) <- c("Darželis", "Eilė", "Viso eilėje","Laisvos vietos",
-                        "Viso vietų", "Statybos metai",
-                        "Adresas","Namai", "Darbas")
+        names(kgs) <- c("Darželis", "Jūsų vieta eilėje", "Iš viso eilėje laukia","Iš viso laisvų vietų",
+                        "Iš viso vietų", "Statybos metai","Adresas", "Atstumas nuo namų", "Atstumas nuo darbo")
         removeUI("#no_work_home")
       } else {
         output$no_work_home <- renderUI({
@@ -221,8 +220,8 @@ shinyServer(function(input, output) {
           `Statybos metai` = zz$BUILDDATE,
           Adresas = zz$`LEFT(ADDRESS, 256)`
         )
-        names(kgs) <- c("Darželis", "Eilė", "Viso eilėje","Laisvos vietos",
-                        "Viso vietų", "Statybos metai","Adresas")
+        names(kgs) <- c("Darželis", "Jūsų vieta eilėje", "Iš viso eilėje laukia","Iš viso laisvų vietų",
+                        "Iš viso vietų", "Statybos metai","Adresas")
       }
       
       kgs
