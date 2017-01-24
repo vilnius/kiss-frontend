@@ -18,6 +18,7 @@ library(dtplyr)
 library(lubridate)
 library(readxl)
 library(jsonlite)
+library(plyr)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- data.frame(allkg) %>% filter(LABEL %in% darzeliai) %>% 
@@ -27,21 +28,51 @@ proj4string(allkg1) <- CRS("+init=epsg:3346")
 tmp <- spTransform(allkg1, CRS("+proj=longlat +datum=WGS84"))
 #apply(tmp@data, 1, function(x, ))
 
-# d <- read.csv(file = "data/priority_from_json.csv",
-#               check.names = FALSE, stringsAsFactors = FALSE)
-# 
-# gat <- read.csv(file = "data/GROUP_AGE_TYPE.csv",
-#                 sep = ";", encoding = "UTF-8", na.strings = c("", "NA"), 
-#                 check.names = FALSE, stringsAsFactors = FALSE)
-# 
-# laukiantys <- read.csv(file = "data/laukianciuju_eileje_ataskaita.csv",
-#                        sep = ";", encoding = "UTF-8", na.strings = c("", "NA"), 
-#                        check.names = FALSE, stringsAsFactors = FALSE)
-# 
-# # this input comes from karolis&raminta
-# empty.slots <- read.csv(file = "data/vietos.csv",
-#                         sep = ";", encoding = "UTF-8", na.strings = c("", "NA"), 
-#                         check.names = FALSE, stringsAsFactors = FALSE)
+d <- read.csv(file = "data/priority_from_json.csv",
+              check.names = FALSE, stringsAsFactors = FALSE)
+
+gat <- read.csv(file = "data/GROUP_AGE_TYPE.csv",
+                sep = ";", encoding = "UTF-8", na.strings = c("", "NA"),
+                check.names = FALSE, stringsAsFactors = FALSE)
+
+laukiantys <- read.csv(file = "data/laukianciuju_eileje_ataskaita.csv",
+                       sep = ";", encoding = "UTF-8", na.strings = c("", "NA"),
+                       check.names = FALSE, stringsAsFactors = FALSE)
+
+# this input comes from karolis&raminta
+empty.slots <- read.csv(file = "data/vietos.csv",
+                        sep = ";", encoding = "UTF-8", na.strings = c("", "NA"),
+                        check.names = FALSE, stringsAsFactors = FALSE)
+
+d <- d[,c("SCH","GLOBALID","GROUPTYPE","ID","ALGORITHM_ID","SCH_ORDERING",
+          "PRIORITY_SUM","ROWNUM","BIRTHDATE","FINAL_PRIORITY")]
+
+# adding group age type info to main dataset
+
+d <- merge(d, gat[,c("ID","AGEFROM","AGETO")],
+           by.x = "GROUPTYPE",
+           by.y = "ID", all.x = T)
+
+d$BIRTHDATE <- date(d$BIRTHDATE)
+
+# adding birth date
+
+# rename.matrix.laukiantys <- read.csv(file = "rename_matrix_laukiantys.csv", check.names = F, stringsAsFactors = F)
+# names(laukiantys) <- rename.matrix.laukiantys$changed.names
+
+# laukiantys$born.date <- as.Date(laukiantys$born.date)
+d$age.of.child <- ((date("2017-01-01") - d$BIRTHDATE) / 365) %>% floor %>% as.numeric
+d$is.from.1.to.3 <- ifelse(d$age.of.child < 3,"below.3","more.3")
+
+empty.slots <- data.frame("SCH" = sort(unique(d$SCH)),
+                          "slots.from.1.to.3" = 5,
+                          "slots.from.3.to.inf" = 5,
+                          "all.from.1.to.3" = 20,
+                          "all.from.3.to.inf" = 20,
+                          check.names = F)
+
+# names(empty.slots)[6] <- "kg_name"
+d <- merge(d, empty.slots, all.x = T)
 
 
 # Define server logic required to draw a histogram
@@ -55,18 +86,103 @@ shinyServer(function(input, output) {
         input$unable + input$lonely + (length(input$otherkids) > 0)
       if(input$city == "2") {
         prio <- prio + 1e2
-      } else if (input$city == "3") {
+      } else if (input$city == "1") {
         prio <- prio + 1e3
       }
-      age <- (Sys.Date() - input$birthddate) %>% as.integer %>%
-        `%/%`(365)
+      input.age.of.child <- (Sys.Date() - input$birthdate) %>% 
+        as.integer %>% `%/%`(365)
       req(rv$home)
       req(rv$work)
+      # leaving d columns that we need
+      
+      output$priority <- renderUI({
+        p(strong("Jūsų prioritetas:"), prio)
+      })
+      
+      input.priority <- prio
+      input.birth.date <- input$birthdate
+      input.age.type <- ifelse(input.age.of.child <=3,"below.3","more.3")
+      # sub.d <- subset(d, input.age.of.child >= AGEFROM & input.age.of.child <= AGETO) 
+      
+      # estimate rank number in each kg x group
+      
+      # browser()
+      
+      rank.enroll <- ddply(d[d$SCH_ORDERING == 1 & d$is.from.1.to.3 == input.age.type,], ~ SCH, function(xframe) {
+        xframe <<- xframe
+        
+        # cat(paste("Ranking in: SCH -", xframe$SCH[1], sep = " "),"\n")
+        
+        from.which.to.remove <- ifelse(input.age.type == "below.3","slots.from.1.to.3","slots.from.3.to.inf")
+        free.space <- xframe[1,from.which.to.remove]
+        total.space <- xframe[1,paste0("all.",gsub("slots.","",from.which.to.remove))]
+        
+        # if (free.space == 0 | is.na(free.space)) {
+        #   print("No space left")
+        # } else {
+        
+        # filling birth dates, where missing
+        if(any(!is.na(xframe$BIRTHDATE))) {
+          xframe[is.na(xframe$BIRTHDATE),"BIRTHDATE"] <- max(xframe$BIRTHDATE,na.rm = T)
+        } else {
+          xframe$born.date <- input.birth.date # if there are kg and group, where all childs birth dates are missing
+        }
+        
+        rank.frame <- rbind(data.frame(xframe[,c("FINAL_PRIORITY","BIRTHDATE")],target = 0),
+                            data.frame(FINAL_PRIORITY = input.priority,BIRTHDATE = input.birth.date, target = 1))
+        
+        rank.frame <- arrange(rank.frame, desc(FINAL_PRIORITY), BIRTHDATE) # after priority, youngest get first in a queue
+        
+        place.in.queue <- which(rank.frame$target == 1)
+        
+        enrolled.or.not <- ifelse(place.in.queue <= free.space, "Yes","No")
+        
+        # output
+        
+        output <- c("enrolled.or.not" = enrolled.or.not,
+                    "place.in.queue" = place.in.queue,
+                    "free.slots" = free.space,
+                    "total.slots" = total.space,
+                    "total.in.queue.with.first.priority" = nrow(rank.frame),
+                    "percentile.in.free.slots" = place.in.queue / free.space)
+        
+        return(output)
+        # }
+      })
+      
+      
+      
+      zz <- arrange(rank.enroll, desc(enrolled.or.not),place.in.queue,desc(free.slots))
+      
+      
+      
+      zz <- zz %>% filter(enrolled.or.not == "Yes") %>% 
+        select(SCH, place.in.queue, free.slots, 
+               total.in.queue.with.first.priority,
+               total.slots) %>% 
+        left_join(allkg %>% select(ID, LABEL, GIS_X, GIS_Y, BUILDDATE, 
+                                   `LEFT(ADDRESS, 256)`), 
+                  by = c("SCH" = "ID")) %>% slice(1:20)
+      
+      coordinates(zz) <- c("GIS_X", "GIS_Y")
+      proj4string(zz) <- CRS("+init=epsg:3346")
+      tmp <- spTransform(zz, CRS("+proj=longlat +datum=WGS84"))
+      
       kgs <- data.frame(
-        Darzelis = tmp@data,
-        Namai = distVincentyEllipsoid(tmp, rv$home)/1e3,
-        Darbas = distVincentyEllipsoid(tmp, rv$work)/1e3
+        Darzelis = tmp@data$LABEL,
+        Eile = tmp@data$place.in.queue,
+        `Viso eileje` = tmp@data$total.in.queue.with.first.priority,
+        laisvos = tmp@data$free.slots,
+        total = tmp@data$total.slots,
+        `Statybos metai` = tmp@data$BUILDDATE,
+        Adresas = tmp@data$`LEFT(ADDRESS, 256)`,
+        Namai = round(distVincentyEllipsoid(tmp, rv$home)/1e3, 1),
+        Darbas = round(distVincentyEllipsoid(tmp, rv$work)/1e3, 1)
       )
+      names(kgs) <- c("Darželis", "Eilė", "Viso eilėje","Laisvos vietos",
+                      "Viso vietų", "Statybos metai",
+                      "Adresas","Namai", "Darbas")
+      kgs
     })
   })
   output$google_maps_API <- renderUI({

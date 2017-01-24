@@ -35,7 +35,7 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      dateInput("birthddate", "Gimimo data", min = "2009-01-01",
+      dateInput("birthdate", "Gimimo data", min = "2009-01-01",
                 max = "2030-01-01"),
       selectizeInput("district", label = "Seniūnija",
                      choices = seniunija),
@@ -49,7 +49,7 @@ shinyUI(fluidPage(
       checkboxInput(
         "school",
         label = "Vienas iš tėvų mokosi bendrojo ugdymo mokykloje?"),
-      checkboxInput("city", label = "Deklaruotas mieste"),
+      # checkboxInput("citydeclared", label = "Deklaruotas mieste"),
       checkboxInput("threemore", label = "3 ir daugiau"),
       checkboxInput("unable", label = "Žemas darbingumas"),
       conditionalPanel(
@@ -83,6 +83,7 @@ shinyUI(fluidPage(
         )
       ),
       #plotOutput("distPlot")
+      uiOutput("priority"),
       tags$h4("Results"),
       DT::dataTableOutput("table")
     )
