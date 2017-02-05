@@ -228,7 +228,19 @@ shinyServer(function(input, output) {
                         "Iš viso vietų", "Statybos metai","Adresas")
       }
       
-      kgs
+      DT::datatable(kgs, options = list(
+        language = list(
+          search = "Ieškoti",
+          lengthMenu = "Rodyti _MENU_ įrašų",
+          paginate = list(
+            first = "Pirmas",
+            `next` = "Kitas",
+            previous = "Ankstesnis",
+            last = "Paskutinis"
+          ),
+          info = "Rodomi įrašai nuo _START_ iki _END_ iš _TOTAL_"
+        )
+      ))
     })
   })
   output$google_maps_API <- renderUI({
