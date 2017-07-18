@@ -13,13 +13,15 @@ library(data.table)
 library(sp)
 library(geosphere)
 library(DT)
+library(plyr)
 library(dplyr)
 library(dtplyr)
 library(lubridate)
 library(readxl)
 library(jsonlite)
-library(plyr)
 darzeliai <- readRDS("darzeliai.RDS") %>% sort
+# browser()
+# zz <- fread("https://raw.githubusercontent.com/vilnius/darzeliai/master/data/darzeliai_grupes.csv", encoding = "UTF-8")
 allkg <- fread("data/istaigos.csv", encoding = "UTF-8")
 allkg1 <- data.frame(allkg) %>% filter(LABEL %in% darzeliai) %>% 
   select(LABEL, GIS_X, GIS_Y) %>% filter(GIS_X != 0)
@@ -41,9 +43,11 @@ laukiantys <- read.csv(file = "data/laukianciuju_eileje_ataskaita.csv",
                        check.names = FALSE, stringsAsFactors = FALSE)
 
 # this input comes from karolis&raminta
-empty.slots <- read.csv(file = "data/vietos.csv",
-                        sep = ";", encoding = "UTF-8", na.strings = c("", "NA"),
-                        check.names = FALSE, stringsAsFactors = FALSE)
+empty.slots <- read.csv(file = "https://raw.githubusercontent.com/vilnius/darzeliai/master/data/darzeliai_grupes.csv",
+                        sep = ",", encoding = "UTF-8", na.strings = c("", "NA"),
+                        check.names = FALSE, stringsAsFactors = FALSE) %>% 
+  select(SCH, LANG, NEEDS, all.from.1.to.3, all.from.3.to.inf, 
+         slots.from.1.to.3, slots.from.3.to.inf)
 
 d <- d[,c("SCH","GLOBALID","GROUPTYPE","ID","ALGORITHM_ID","SCH_ORDERING",
           "PRIORITY_SUM","ROWNUM","BIRTHDATE","FINAL_PRIORITY")]
@@ -68,6 +72,9 @@ d$is.from.1.to.3 <- ifelse(d$age.of.child < 3,"below.3","more.3")
 empty.slots <- ddply(empty.slots, ~ SCH, function(xframe) {
   return(apply(xframe[,-1:-3],2,sum))
 })
+
+
+
 
 # names(empty.slots)[6] <- "kg_name"
 d <- merge(d, empty.slots, all.x = T)
