@@ -43,7 +43,7 @@ laukiantys <- read.csv(file = "data/laukianciuju_eileje_ataskaita.csv",
                        check.names = FALSE, stringsAsFactors = FALSE)
 
 # this input comes from karolis&raminta
-empty.slots <- read.csv(file = "https://raw.githubusercontent.com/vilnius/darzeliai/master/data/darzeliai_grupes.csv",
+empty.slots <- read.csv(file = "data/vietos.csv",
                         sep = ",", encoding = "UTF-8", na.strings = c("", "NA"),
                         check.names = FALSE, stringsAsFactors = FALSE) %>% 
   select(SCH, LANG, NEEDS, all.from.1.to.3, all.from.3.to.inf, 
