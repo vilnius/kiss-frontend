@@ -179,8 +179,13 @@ shinyServer(function(input, output) {
         # }
       })
       
-      
-      
+      rank.enroll <- rank.enroll %>% mutate(
+        place.in.queue = as.numeric(place.in.queue),
+        free.slots = as.numeric(free.slots),
+        total.slots = as.numeric(total.slots),
+        total.in.queue.with.first.priority = as.numeric(total.in.queue.with.first.priority),
+        percentile.in.free.slots = as.numeric(percentile.in.free.slots)
+      )
       zz <- arrange(rank.enroll, desc(enrolled.or.not),place.in.queue,desc(free.slots))
       
       if (!is.null(rv$work) & !is.null(rv$home)) {
@@ -229,12 +234,12 @@ shinyServer(function(input, output) {
           laisvos = zz$free.slots,
           total = zz$total.slots,
           `Statybos metai` = zz$BUILDDATE,
-          Adresas = zz$`LEFT(ADDRESS, 256)`
+          Adresas = zz$`LEFT(ADDRESS, 256)`,
+          stringsAsFactors = FALSE
         )
         names(kgs) <- c("Darželis", "Jūsų vieta eilėje", "Iš viso eilėje laukia","Iš viso laisvų vietų",
                         "Iš viso vietų", "Statybos metai","Adresas")
       }
-      
       DT::datatable(kgs, options = list(
         language = list(
           search = "Ieškoti",
